@@ -208,10 +208,6 @@ void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 
 		CString s1;
 		s1 = "";
-		s1.Format(_T("In Timer read %d bytes from COM PORT\n%s"),bytesRead,buf);
-		//CString s2 = CString(buf);
-		//s2.Format(_T("%s read %d bytes from serial"), (LPCTSTR)s1, bytesRead);
-		//s1.Append(s2);
 
 		if (bytesRead > 0)
 		{
@@ -220,11 +216,21 @@ void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 
 		s1 = CA2W(buf, CP_UTF8);
 		sInfo.Append(s1);
+		int stringlen = sInfo.GetLength();
+		if (stringlen >= 512) {
+			sInfo.Delete(0, stringlen - 512);
+		}
 
 		m_edit = sInfo;
 		UpdateData(FALSE);                       // Variablen --> Felder
+
+		this->newBytesFromUart(buf, bytesRead);//in dieser Funktion den NMEA parser aufrufen
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
 }
 
+void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
+{
+	OutputDebugStringA("Data Received from uart\n");
+}

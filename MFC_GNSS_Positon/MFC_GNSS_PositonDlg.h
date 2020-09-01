@@ -38,10 +38,8 @@ protected:
 public:
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
-//	CEdit uart_output;
-//	CString m_edit;
 	CString m_edit;
-//	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedOk();
+	void newBytesFromUart(char * buf, int buflen);//Daten von der Uart Schnittstelle empfangen
 };

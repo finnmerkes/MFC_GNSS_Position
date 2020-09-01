@@ -61,6 +61,7 @@ int CSerial::Open_Port(int PORT_NR)
 		return 1;
   }
 
+  dcb.DCBlength = sizeof(DCB);
   fSuccess = GetCommState(hCom, &dcb);
 
   if (!fSuccess) {
@@ -70,6 +71,20 @@ int CSerial::Open_Port(int PORT_NR)
 	  p_Win->MessageBox(_T("Fehler: Kein Status\n"));
 	  return 1;
 	}
+
+	dcb.BaudRate = 9600;
+	dcb.ByteSize = 8;
+	dcb.Parity = 0;//none parity
+	dcb.StopBits = 0;//0 means one stop bit
+
+	if (!SetCommState(hCom, &dcb))
+	{
+	  CWnd* p_Win;
+	  p_Win = AfxGetApp()->m_pMainWnd;  //Zeiger zur Benutzung der Fkt. MessageBox!
+	  p_Win->MessageBox(_T("Fehler: beim Einstellen der Schnittstelle\n"));
+	  return 1;
+	}
+
   return 0;
 } 
 
@@ -215,5 +230,4 @@ void CSerial::wait(int milli_sek)
   while( clock() < start + milli_sek)
     ;
 }
-
 
