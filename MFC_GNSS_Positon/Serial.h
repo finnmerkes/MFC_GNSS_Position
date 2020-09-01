@@ -40,6 +40,8 @@ public:
     int   SetRTS    (bool mode);	//Setzen des Pins RTS auf 0 oder 1
     int   SetTXD    (bool mode);	//Setzen des Pins TXD auf 0 oder 1
     int   SetAll    (bool mode);	//Setzen aller Ausgänge
+
+	int GetNumberOfBytes(void);		//Ausgabe der noch zu lesenden Bytes der Schnittstelle
 	
     bool  GetCTS();					//Einlesen des Zustands am Pin CTS
     bool  GetDSR();					//Einlesen des Zustands am Pin DSR	

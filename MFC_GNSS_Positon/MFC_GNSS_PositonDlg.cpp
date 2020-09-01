@@ -7,6 +7,8 @@
 #include "MFC_GNSS_PositonDlg.h"
 #include "afxdialogex.h"
 
+#include "Serial.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -24,7 +26,7 @@ public:
 	enum { IDD = IDD_ABOUTBOX };
 #endif
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 // Implementation
@@ -51,6 +53,7 @@ END_MESSAGE_MAP()
 
 CMFC_GNSS_PositonDlg::CMFC_GNSS_PositonDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_MFC_GNSS_POSITON_DIALOG, pParent)
+	, m_edit(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -58,12 +61,18 @@ CMFC_GNSS_PositonDlg::CMFC_GNSS_PositonDlg(CWnd* pParent /*=NULL*/)
 void CMFC_GNSS_PositonDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	//  DDX_Text(pDX, IDC_EDIT1, m_edit);
+	DDV_MaxChars(pDX, m_edit, 128);
+	DDX_Text(pDX, IDC_EDIT2, m_edit);
+	DDX_Text(pDX, IDC_EDIT2, m_edit);
 }
 
 BEGIN_MESSAGE_MAP(CMFC_GNSS_PositonDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON1, &CMFC_GNSS_PositonDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CMFC_GNSS_PositonDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -99,7 +108,8 @@ BOOL CMFC_GNSS_PositonDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-
+	
+	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -152,3 +162,51 @@ HCURSOR CMFC_GNSS_PositonDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CMFC_GNSS_PositonDlg::OnBnClickedButton1()
+{
+
+	// Set its text (string loaded from string table) 
+	CString text;
+	text = (_T("Insert Data"));
+	//myStaticText.SetWindowText(text);
+
+	// TODO: Add your control notification handler code here
+	OutputDebugStringA("Button Pressed\n");
+
+	//uart_output.SetCapture("lmaa");
+
+	serial.Open_Port(4);
+
+	serial.wait(1000);
+	int i = serial.GetNumberOfBytes();
+	LPCSTR output = "lmaa\n";
+	OutputDebugStringA(output);
+
+	serial.wait(1000);
+
+	serial.Close_Port();
+}
+
+
+void CMFC_GNSS_PositonDlg::OnBnClickedButton2()
+{
+	static int counter = 0;
+
+	CString s1;
+	s1.Append(_T("Das ist der Hammer "));
+	CString s2;
+	s2.Format(_T("%s%d"), (LPCTSTR)s1,counter);
+
+	//s2.Format("%s: %d", s1, counter);
+	//m_edit = m_edit + counter;
+
+	//UpdateData(TRUE);                        // Felder --> Variablen
+	m_edit = s2;
+	UpdateData(FALSE);                       // Variablen --> Felder
+
+	counter++;
+	// TODO: Add your control notification handler code here
+	serial.Close_Port();
+}

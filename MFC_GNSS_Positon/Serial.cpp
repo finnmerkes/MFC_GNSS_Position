@@ -19,7 +19,7 @@ static char THIS_FILE[]=__FILE__;
 
 CSerial::CSerial()
 {
-
+	hCom = NULL;
 }
 
 CSerial::~CSerial()
@@ -45,7 +45,7 @@ int CSerial::Open_Port(int PORT_NR)
  
 
   hCom = CreateFile(Com,
-      GENERIC_READ | GENERIC_WRITE,
+      GENERIC_READ, //| GENERIC_WRITE,
       0,    /* comm devices must be opened w/exclusive-access */
       NULL, /* no security attrs */
       OPEN_EXISTING, /* comm devices must use OPEN_EXISTING */
@@ -76,6 +76,11 @@ int CSerial::Open_Port(int PORT_NR)
 
 int CSerial::Close_Port() 
 { 
+	if (NULL == hCom)
+	{
+		return 0;
+	}
+
     CloseHandle(hCom);
 	hCom=NULL;
     return 0; 
@@ -170,6 +175,27 @@ int  CSerial::SetAll (bool mode)
     SetTXD(mode); 
     SetDTR(mode); 
 	return 0;
+}
+
+int CSerial::GetNumberOfBytes(void)
+{
+	DCB       dcb;
+	int       retVal;
+	BYTE       Byte[512];
+	DWORD       dwBytesTransferred;
+	DWORD       dwCommModemStatus;
+
+	/*
+	SetCommMask(hCom, EV_RXCHAR | EV_ERR);       //receive character event         
+	WaitCommEvent (hCom, &dwCommModemStatus, 0);  //wait for character        
+	if (dwCommModemStatus & EV_RXCHAR)                
+		ReadFile (hCom, &Byte, 1, &dwBytesTransferred, 0);  //read 1        
+	else if (dwCommModemStatus & EV_ERR)               
+		retVal       =       0x101;     */         
+    
+	ReadFile(hCom, &Byte, 24, &dwBytesTransferred, 0);  //read 1
+
+	return dwBytesTransferred;
 }
 
 void CSerial::wait(int milli_sek)

@@ -184,12 +184,14 @@
     <ClInclude Include="MFC_GNSS_Positon.h" />
     <ClInclude Include="MFC_GNSS_PositonDlg.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Serial.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_GNSS_Positon.cpp" />
     <ClCompile Include="MFC_GNSS_PositonDlg.cpp" />
+    <ClCompile Include="Serial.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -209,4 +211,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="MFC_GNSS_Positon.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
