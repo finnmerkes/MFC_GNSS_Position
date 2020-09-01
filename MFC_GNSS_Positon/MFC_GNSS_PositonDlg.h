@@ -41,4 +41,7 @@ public:
 //	CEdit uart_output;
 //	CString m_edit;
 	CString m_edit;
+//	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedOk();
 };

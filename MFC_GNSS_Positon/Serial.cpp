@@ -177,23 +177,33 @@ int  CSerial::SetAll (bool mode)
 	return 0;
 }
 
-int CSerial::GetNumberOfBytes(void)
+int CSerial::ReadDataWaiting(void)
 {
-	DCB       dcb;
-	int       retVal;
-	BYTE       Byte[512];
-	DWORD       dwBytesTransferred;
-	DWORD       dwCommModemStatus;
 
-	/*
-	SetCommMask(hCom, EV_RXCHAR | EV_ERR);       //receive character event         
-	WaitCommEvent (hCom, &dwCommModemStatus, 0);  //wait for character        
-	if (dwCommModemStatus & EV_RXCHAR)                
-		ReadFile (hCom, &Byte, 1, &dwBytesTransferred, 0);  //read 1        
-	else if (dwCommModemStatus & EV_ERR)               
-		retVal       =       0x101;     */         
+	if (NULL == hCom)
+	{
+		return(0);
+	}
+
+	DWORD dwErrorFlags;
+	COMSTAT ComStat;
+
+	ClearCommError(hCom, &dwErrorFlags, &ComStat);
+
+	return((int)ComStat.cbInQue);
+
+}
+
+int CSerial::Read(char * buf, int buflen)
+{
+	DWORD       dwBytesTransferred;
+
+	if (NULL == hCom)
+	{
+		return 0;
+	}
     
-	ReadFile(hCom, &Byte, 24, &dwBytesTransferred, 0);  //read 1
+	ReadFile(hCom, buf, buflen, &dwBytesTransferred, 0);  //read 1
 
 	return dwBytesTransferred;
 }

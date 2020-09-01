@@ -73,6 +73,8 @@ BEGIN_MESSAGE_MAP(CMFC_GNSS_PositonDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFC_GNSS_PositonDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFC_GNSS_PositonDlg::OnBnClickedButton2)
+	ON_WM_TIMER()
+	ON_BN_CLICKED(IDOK, &CMFC_GNSS_PositonDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -108,7 +110,7 @@ BOOL CMFC_GNSS_PositonDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
-	
+	SetTimer(1, 1000, 0);
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -162,51 +164,67 @@ HCURSOR CMFC_GNSS_PositonDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-void CMFC_GNSS_PositonDlg::OnBnClickedButton1()
+void CMFC_GNSS_PositonDlg::OnBnClickedOk()
 {
-
-	// Set its text (string loaded from string table) 
-	CString text;
-	text = (_T("Insert Data"));
-	//myStaticText.SetWindowText(text);
-
 	// TODO: Add your control notification handler code here
-	OutputDebugStringA("Button Pressed\n");
+	serial.Close_Port();
+	CDialogEx::OnOK();
+}
 
-	//uart_output.SetCapture("lmaa");
-
+void CMFC_GNSS_PositonDlg::OnBnClickedButton1()//open button
+{
 	serial.Open_Port(4);
-
-	serial.wait(1000);
-	int i = serial.GetNumberOfBytes();
-	LPCSTR output = "lmaa\n";
-	OutputDebugStringA(output);
-
-	serial.wait(1000);
-
-	serial.Close_Port();
 }
 
-
-void CMFC_GNSS_PositonDlg::OnBnClickedButton2()
+void CMFC_GNSS_PositonDlg::OnBnClickedButton2()// close button
 {
-	static int counter = 0;
-
-	CString s1;
-	s1.Append(_T("Das ist der Hammer "));
-	CString s2;
-	s2.Format(_T("%s%d"), (LPCTSTR)s1,counter);
-
-	//s2.Format("%s: %d", s1, counter);
-	//m_edit = m_edit + counter;
-
-	//UpdateData(TRUE);                        // Felder --> Variablen
-	m_edit = s2;
-	UpdateData(FALSE);                       // Variablen --> Felder
-
-	counter++;
-	// TODO: Add your control notification handler code here
 	serial.Close_Port();
 }
+
+static char buf[128];
+static CString sInfo;
+
+void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	int ret = 0;
+	int bytesRead = 0;
+
+	memset(buf, 0, sizeof(buf));
+	/*
+	BOOL PurgeComm(
+		HANDLE hFile,
+		DWORD  dwFlags
+	);
+	*/
+	ret = serial.ReadDataWaiting();
+	if (ret > 0)
+	{
+		//sizeof(buf)-1: Damit sind die chars im Puffer buf immer ein Null-terminierter String!
+		if (ret > sizeof(buf)-1)
+		{
+			ret = sizeof(buf)-1;
+		}
+		bytesRead = serial.Read(buf, ret);
+
+		CString s1;
+		s1 = "";
+		s1.Format(_T("In Timer read %d bytes from COM PORT\n%s"),bytesRead,buf);
+		//CString s2 = CString(buf);
+		//s2.Format(_T("%s read %d bytes from serial"), (LPCTSTR)s1, bytesRead);
+		//s1.Append(s2);
+
+		if (bytesRead > 0)
+		{
+			//OutputDebugStringA("data received\n");
+		}
+
+		s1 = CA2W(buf, CP_UTF8);
+		sInfo.Append(s1);
+
+		m_edit = sInfo;
+		UpdateData(FALSE);                       // Variablen --> Felder
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+

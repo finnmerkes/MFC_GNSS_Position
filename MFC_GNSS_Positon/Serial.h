@@ -41,8 +41,9 @@ public:
     int   SetTXD    (bool mode);	//Setzen des Pins TXD auf 0 oder 1
     int   SetAll    (bool mode);	//Setzen aller Ausgänge
 
-	int GetNumberOfBytes(void);		//Ausgabe der noch zu lesenden Bytes der Schnittstelle
-	
+	int Read(char * buf, int buflen);//Ausgabe der noch zu lesenden Bytes der Schnittstelle
+	int ReadDataWaiting(void);
+
     bool  GetCTS();					//Einlesen des Zustands am Pin CTS
     bool  GetDSR();					//Einlesen des Zustands am Pin DSR	
 	bool  GetRI();					//Einlesen des Zustands am Pin RI				
