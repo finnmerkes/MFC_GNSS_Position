@@ -173,7 +173,7 @@ void CMFC_GNSS_PositonDlg::OnBnClickedOk()
 
 void CMFC_GNSS_PositonDlg::OnBnClickedButton1()//open button
 {
-	serial.Open_Port(4);
+	serial.Open_Port(5);
 }
 
 void CMFC_GNSS_PositonDlg::OnBnClickedButton2()// close button
@@ -215,7 +215,22 @@ void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 
 		s1 = CA2W(buf, CP_UTF8);
-		sInfo.Append(s1);
+
+
+		// Von Finn
+
+		//Nur wenn "RMC" enthalten ist wird der String angehängt
+		CString rmc;
+		rmc = "RMC";
+		if (s1.Find(rmc, 0) != -1)
+		{
+			sInfo.Append(s1);
+		}
+
+		//sInfo.Append(s1);
+
+
+
 		int stringlen = sInfo.GetLength();
 		if (stringlen >= 512) {
 			sInfo.Delete(0, stringlen - 512);
