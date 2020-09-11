@@ -216,20 +216,7 @@ void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 
 		s1 = CA2W(buf, CP_UTF8);
 
-
-		// Von Finn
-
-		//Nur wenn "RMC" enthalten ist wird der String angehängt
-		CString rmc;
-		rmc = "RMC";
-		if (s1.Find(rmc, 0) != -1)
-		{
-			sInfo.Append(s1);
-		}
-
-		//sInfo.Append(s1);
-
-
+		sInfo.Append(s1);
 
 		int stringlen = sInfo.GetLength();
 		if (stringlen >= 512) {
@@ -247,5 +234,52 @@ void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
 {
-	OutputDebugStringA("Data Received from uart\n");
+	CString rmcString;
+	rmcString = "";
+
+	rmcString = CA2W(buf, CP_UTF8);
+
+#pragma region extractRMC
+
+	CString rmc;
+	rmc = "RMC";
+
+	int rmc_position = -1;
+	int d1 = -1;
+	int d2 = -1;
+
+	rmc_position = rmcString.Find(rmc, 0);
+
+
+	if (rmc_position != -1)
+	{
+		//OutputDebugStringW(rmcString + "\n\n");
+
+		for (int i = rmc_position; i >= 0; i--)
+		{
+			if (rmcString[i] == '$')
+			{
+				d1 = i;
+				d2 = rmcString.Find('$', rmc_position);
+
+				break;
+			}
+		}
+		if (d1 != -1 && d2 != -1 && d1 + 68 == d2)
+		{
+			rmcString = rmcString.Mid(d1, d2 - d1);
+
+			OutputDebugStringW(rmcString);
+		}
+	}
+	else return;
+#pragma endregion
+
+	//CheckForValidness
+	if (rmcString[14] == 'V')
+	{
+		return;
+	}
+
+	return;
 }
