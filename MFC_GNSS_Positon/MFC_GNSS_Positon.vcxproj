@@ -183,6 +183,7 @@
   <ItemGroup>
     <ClInclude Include="MFC_GNSS_Positon.h" />
     <ClInclude Include="MFC_GNSS_PositonDlg.h" />
+    <ClInclude Include="PosAverager.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Serial.h" />
     <ClInclude Include="stdafx.h" />
@@ -191,6 +192,7 @@
   <ItemGroup>
     <ClCompile Include="MFC_GNSS_Positon.cpp" />
     <ClCompile Include="MFC_GNSS_PositonDlg.cpp" />
+    <ClCompile Include="PosAverager.cpp" />
     <ClCompile Include="Serial.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

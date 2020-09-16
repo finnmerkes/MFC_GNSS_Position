@@ -8,6 +8,11 @@
 #include "afxdialogex.h"
 
 #include "Serial.h"
+#include "PosAverager.h"
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -180,7 +185,7 @@ void CMFC_GNSS_PositonDlg::OnBnClickedButton2()// close button
 {
 	serial.Close_Port();
 }
-
+static PosAverager averager(5);
 static char buf[128];
 static CString sInfo;
 
@@ -253,8 +258,6 @@ void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
 
 	if (rmc_position != -1)
 	{
-		//OutputDebugStringW(rmcString + "\n\n");
-
 		for (int i = rmc_position; i >= 0; i--)
 		{
 			if (rmcString[i] == '$')
@@ -269,17 +272,24 @@ void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
 		{
 			rmcString = rmcString.Mid(d1, d2 - d1);
 
-			OutputDebugStringW(rmcString);
+			//OutputDebugStringW(rmcString);
 		}
 	}
 	else return;
 #pragma endregion
 
 	//CheckForValidness
-	if (rmcString[14] == 'V')
+	if (rmcString[17] == 'A')
 	{
-		return;
+		//OutputDebugStringA("Valid\n");
+		gnss_position pos;
+		pos.horizontalCD = rmcString[30];
+		CString a = rmcString.Mid(18, 11);
+		//pos.horizontalDM = stof(rmcString.Mid(18, 10).GetBuffer());
+		pos.verticalCD = rmcString[44];
+		//pos.verticalDM = stof(rmcString.Mid(32, 11).GetBuffer());
+		
+		if (1);
 	}
-
 	return;
 }
