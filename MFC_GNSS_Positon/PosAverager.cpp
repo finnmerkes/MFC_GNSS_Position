@@ -18,36 +18,45 @@ PosAverager::PosAverager(unsigned int length)
 
 PosAverager::~PosAverager()
 {
-
+	delete positions;
 }
 
-gnss_position* PosAverager::insertPosition(gnss_position pos)
+bool PosAverager::filledUp()
+{
+	return filled;
+}
+
+void PosAverager::insertPosition(gnss_position pos)
 {
 	lastAdded++;
-	positions[lastAdded];
+	positions[lastAdded] = pos;
 
-	if (lastAdded == length - 1) lastAdded = -1;
-
-	int count;
-	for (int i = 0; i < length; i++)
+	if (lastAdded == length - 1)
 	{
-		if (positions->verticalCD == '\0') count == i;
+		lastAdded = -1;
+		filled = true;
 	}
 
-	gnss_position av;
-	for (int i = 0; i < count; i++)
+	if (filled == true) 
 	{
-		av.horizontalDM += positions[i].horizontalDM;
-		av.verticalDM += positions[i].verticalDM;
+		gnss_position av;
+		av.horizontalDM = 0;
+		av.verticalDM = 0;
+
+		for (int i = 0; i < length; i++)
+		{
+			av.horizontalDM += positions[i].horizontalDM;
+			av.verticalDM += positions[i].verticalDM;
+		}
+
+		av.horizontalDM /= length;
+		av.verticalDM /= length;
+
+		average = av;
 	}
+}
 
-	av.horizontalDM /= count;
-	av.verticalDM /= count;
-
-	char output[16];
-
-	gcvt(av.horizontalDM, 9, output);
-
-	OutputDebugStringA(output);
-	return &av;
+gnss_position * PosAverager::getAverage()
+{
+	return &average;
 }

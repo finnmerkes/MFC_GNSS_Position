@@ -281,15 +281,41 @@ void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
 	//CheckForValidness
 	if (rmcString[17] == 'A')
 	{
-		//OutputDebugStringA("Valid\n");
 		gnss_position pos;
+
+		// befüllung der gnss_pos struktur
 		pos.horizontalCD = rmcString[30];
-		CString a = rmcString.Mid(18, 11);
-		//pos.horizontalDM = stof(rmcString.Mid(18, 10).GetBuffer());
-		pos.verticalCD = rmcString[44];
-		//pos.verticalDM = stof(rmcString.Mid(32, 11).GetBuffer());
 		
-		if (1);
+		float degree = _ttof(rmcString.Mid(19, 2));
+		float minutes = _ttof(rmcString.Mid(21, 8));
+
+		pos.horizontalDM = degree + minutes / 60;
+
+		pos.verticalCD = rmcString[44];
+		
+		degree = _ttof(rmcString.Mid(32, 3));
+		minutes = _ttof(rmcString.Mid(35, 8));
+
+		pos.verticalDM = degree + minutes / 60;
+
+		averager.insertPosition(pos);		// Übergabe der gnss_pos struktur an den averager
+
+		if (averager.filledUp())			// Wenn der Averager mit genügend daten gefüllt ist
+		{									// Ausgabe des Schwerpunkts
+			pos = *averager.getAverage();
+											
+			CString out;
+			out = "";
+			CString s;
+			s.Format(_T("%f"), pos.horizontalDM);
+			out += s;
+			out += ", ";
+			s.Format(_T("%f"), pos.verticalDM);
+			out += s;
+			out += "\n";
+
+			OutputDebugStringW(out);
+		}
 	}
 	return;
 }

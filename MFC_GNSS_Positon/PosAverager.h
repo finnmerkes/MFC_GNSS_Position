@@ -12,8 +12,10 @@ class PosAverager
 {
 private:
 	gnss_position* positions;
+	gnss_position average;
 	int lastAdded;
-	int length;
+	int length = 16;
+	bool filled = false;
 
 public:
 
@@ -21,8 +23,9 @@ public:
 	PosAverager(unsigned int length);
 	~PosAverager();
 	bool filledUp();
-	gnss_position* insertPosition(gnss_position pos);
+	void insertPosition(gnss_position pos);
 	void reset();
 	bool toJson(CString path);
+	gnss_position* getAverage();
 };
 
