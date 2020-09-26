@@ -41,5 +41,5 @@ public:
 	CString m_edit;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedOk();
-	void newBytesFromUart(char * buf, int buflen);//Daten von der Uart Schnittstelle empfangen
+	void newBytesFromUart(CString buf, int buflen);//Daten von der Uart Schnittstelle empfangen
 };

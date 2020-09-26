@@ -185,8 +185,10 @@ void CMFC_GNSS_PositonDlg::OnBnClickedButton2()// close button
 }
 static PosAverager averager(5);
 static char buf[128];
+static CString remain;
 static CString sInfo;
 
+// TODO: verbessern
 void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	int ret = 0;
@@ -219,6 +221,16 @@ void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 
 		s1 = CA2W(buf, CP_UTF8);
 
+/*
+		CString rmc;
+		rmc = "RMC";
+		int i = -1;
+		i = s1.Find(rmc, 0);
+		if (i != -1)
+		{
+			OutputDebugStringA("RMC\n");			// aktivieren um zu sehen dass jeder RMC String verwendet wird
+		}
+*/
 		sInfo.Append(s1);
 
 		int stringlen = sInfo.GetLength();
@@ -229,18 +241,34 @@ void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 		m_edit = sInfo;
 		UpdateData(FALSE);                       // Variablen --> Felder
 
-		this->newBytesFromUart(buf, bytesRead);//in dieser Funktion den NMEA parser aufrufen
+#pragma region cutString
+
+		remain += s1;
+
+		int first_index = 0, second_index = 0;
+
+		for (int i = 0; i < remain.GetLength(); i++)
+		{
+			if (remain[i] == '$') 
+			{
+				if (first_index <= second_index) first_index = i;
+				else second_index = i;
+			}
+		}
+
+		s1 = remain.Mid(0, second_index + 1);
+		remain = remain.Right(remain.GetLength() - second_index);
+
+#pragma endregion
+
+		this->newBytesFromUart(s1, bytesRead);//in dieser Funktion den NMEA parser aufrufen
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
 }
-// TODO: verbessern
-void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
-{
-	CString rmcString;
-	rmcString = "";
 
-	rmcString = CA2W(buf, CP_UTF8);
+void CMFC_GNSS_PositonDlg::newBytesFromUart(CString buf, int buflen)
+{
 
 #pragma region extractRMC
 
@@ -251,48 +279,48 @@ void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
 	int d1 = -1;
 	int d2 = -1;
 
-	rmc_position = rmcString.Find(rmc, 0);
+	rmc_position = buf.Find(rmc, 0);
 
 
 	if (rmc_position != -1)
 	{
 		for (int i = rmc_position; i >= 0; i--)
 		{
-			if (rmcString[i] == '$')
+			if (buf[i] == '$')
 			{
 				d1 = i;
-				d2 = rmcString.Find('$', rmc_position);
+				d2 = buf.Find('$', rmc_position);
 
 				break;
 			}
 		}
 		if (d1 != -1 && d2 != -1 && d1 + 68 == d2)
 		{
-			rmcString = rmcString.Mid(d1, d2 - d1);
+			buf = buf.Mid(d1, d2 - d1);
 
-			//OutputDebugStringW(rmcString);
+			//OutputDebugStringW(buf);
 		}
 	}
 	else return;
 #pragma endregion
 
 	//CheckForValidness
-	if (rmcString[17] == 'A')
+	if (buf[17] == 'A')
 	{
 		gnss_position pos;
 
 		// befüllung der gnss_pos struktur
-		pos.horizontalCD = rmcString[30];
+		pos.horizontalCD = buf[30];
 		
-		double degree = _ttof(rmcString.Mid(19, 2));
-		double minutes = _ttof(rmcString.Mid(21, 8));
+		double degree = _ttof(buf.Mid(19, 2));
+		double minutes = _ttof(buf.Mid(21, 8));
 
 		pos.horizontalDM = degree + minutes / 60;
 
-		pos.verticalCD = rmcString[44];
+		pos.verticalCD = buf[44];
 		
-		degree = _ttof(rmcString.Mid(32, 3));
-		minutes = _ttof(rmcString.Mid(35, 8));
+		degree = _ttof(buf.Mid(32, 3));
+		minutes = _ttof(buf.Mid(35, 8));
 
 		pos.verticalDM = degree + minutes / 60;
 
