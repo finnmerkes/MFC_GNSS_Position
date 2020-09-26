@@ -114,7 +114,6 @@ BOOL CMFC_GNSS_PositonDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	// TODO: Add extra initialization here
 	SetTimer(1, 1000, 0);
 	
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -171,7 +170,6 @@ HCURSOR CMFC_GNSS_PositonDlg::OnQueryDragIcon()
 
 void CMFC_GNSS_PositonDlg::OnBnClickedOk()
 {
-	// TODO: Add your control notification handler code here
 	serial.Close_Port();
 	CDialogEx::OnOK();
 }
@@ -236,7 +234,7 @@ void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 
 	CDialogEx::OnTimer(nIDEvent);
 }
-
+// TODO: verbessern
 void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
 {
 	CString rmcString;
@@ -286,8 +284,8 @@ void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
 		// befüllung der gnss_pos struktur
 		pos.horizontalCD = rmcString[30];
 		
-		float degree = _ttof(rmcString.Mid(19, 2));
-		float minutes = _ttof(rmcString.Mid(21, 8));
+		double degree = _ttof(rmcString.Mid(19, 2));
+		double minutes = _ttof(rmcString.Mid(21, 8));
 
 		pos.horizontalDM = degree + minutes / 60;
 
@@ -298,24 +296,22 @@ void CMFC_GNSS_PositonDlg::newBytesFromUart(char * buf, int buflen)
 
 		pos.verticalDM = degree + minutes / 60;
 
-		averager.insertPosition(pos);		// Übergabe der gnss_pos struktur an den averager
+		pos = averager.insertPosition(pos);		// Übergabe der gnss_pos struktur an den averager
 
-		if (averager.filledUp())			// Wenn der Averager mit genügend daten gefüllt ist
-		{									// Ausgabe des Schwerpunkts
-			pos = *averager.getAverage();
-											
-			CString out;
-			out = "";
-			CString s;
-			s.Format(_T("%f"), pos.horizontalDM);
-			out += s;
-			out += ", ";
-			s.Format(_T("%f"), pos.verticalDM);
-			out += s;
-			out += "\n";
 
-			OutputDebugStringW(out);
-		}
+												// Ausgabe des Schwerpunkts
+		CString out;
+		out = "";
+		CString s;
+		s.Format(_T("%f"), pos.horizontalDM);
+		out += s;
+		out += ", ";
+		s.Format(_T("%f"), pos.verticalDM);
+		out += s;
+		out += "\n";
+
+		OutputDebugStringW(out);
+		
 	}
 	return;
 }

@@ -26,7 +26,7 @@ bool PosAverager::filledUp()
 	return filled;
 }
 
-void PosAverager::insertPosition(gnss_position pos)
+gnss_position PosAverager::insertPosition(gnss_position pos)
 {
 	lastAdded++;
 	positions[lastAdded] = pos;
@@ -37,12 +37,12 @@ void PosAverager::insertPosition(gnss_position pos)
 		filled = true;
 	}
 
-	if (filled == true) 
-	{
-		gnss_position av;
-		av.horizontalDM = 0;
-		av.verticalDM = 0;
+	gnss_position av;
+	av.horizontalDM = 0.f;
+	av.verticalDM = 0.f;
 
+	if (filled) 
+	{
 		for (int i = 0; i < length; i++)
 		{
 			av.horizontalDM += positions[i].horizontalDM;
@@ -51,12 +51,18 @@ void PosAverager::insertPosition(gnss_position pos)
 
 		av.horizontalDM /= length;
 		av.verticalDM /= length;
-
-		average = av;
 	}
-}
+	else
+	{
+		for (int i = 0; i <= lastAdded; i++)
+		{
+			av.horizontalDM += positions[i].horizontalDM;
+			av.verticalDM += positions[i].verticalDM;
+		}
 
-gnss_position * PosAverager::getAverage()
-{
-	return &average;
+		av.horizontalDM /= lastAdded + 1;
+		av.verticalDM /= lastAdded + 1;
+	}
+
+	return av;
 }
