@@ -188,7 +188,7 @@ static char buf[128];
 static CString remain;
 static CString sInfo;
 
-// TODO: verbessern
+
 void CMFC_GNSS_PositonDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	int ret = 0;
@@ -331,15 +331,19 @@ void CMFC_GNSS_PositonDlg::newBytesFromUart(CString buf, int buflen)
 		CString out;
 		out = "";
 		CString s;
-		s.Format(_T("%f"), pos.horizontalDM);
+		s.Format(_T("%.10f"), pos.horizontalDM);
 		out += s;
 		out += ", ";
-		s.Format(_T("%f"), pos.verticalDM);
+		s.Format(_T("%.10f"), pos.verticalDM);
 		out += s;
 		out += "\n";
 
 		OutputDebugStringW(out);
 		
+		CString a;
+		a = "gpx\\";
+
+		if (averager.filledUp()) averager.toJson(a);
 	}
 	return;
 }

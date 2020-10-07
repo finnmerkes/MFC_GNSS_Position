@@ -15,6 +15,7 @@ private:
 	int lastAdded;
 	int length = 16;
 	bool filled = false;
+	gnss_position* average;
 
 public:
 
