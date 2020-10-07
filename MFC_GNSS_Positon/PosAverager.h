@@ -15,7 +15,7 @@ private:
 	int lastAdded;
 	int length = 16;
 	bool filled = false;
-	gnss_position* average;
+	gnss_position average;
 
 public:
 
@@ -27,4 +27,3 @@ public:
 	void reset();
 	bool toJson(CString path);
 };
-

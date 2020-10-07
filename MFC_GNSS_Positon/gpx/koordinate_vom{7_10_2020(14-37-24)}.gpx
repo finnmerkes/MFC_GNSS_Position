@@ -1,0 +1,27 @@
+<?xml version ="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx version="1.1">
+<wpt lat="51.2554576667" lon="9.5653680000">
+<ele>137</ele>
+<name>WP0</name>
+</wpt>
+<wpt lat="51.2554560000" lon="9.5653671667">
+<ele>137</ele>
+<name>WP1</name>
+</wpt>
+<wpt lat="51.2554521667" lon="9.5653670000">
+<ele>137</ele>
+<name>WP2</name>
+</wpt>
+<wpt lat="51.2554573333" lon="9.5653653333">
+<ele>137</ele>
+<name>WP3</name>
+</wpt>
+<wpt lat="51.2554563333" lon="9.5653678333">
+<ele>137</ele>
+<name>WP4</name>
+</wpt>
+<wpt lat="51.2554559000" lon="9.5653670667">
+<ele>137</ele>
+<name>AVERAGE</name>
+</wpt>
+</gpx>

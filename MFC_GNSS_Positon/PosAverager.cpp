@@ -65,7 +65,7 @@ gnss_position PosAverager::insertPosition(gnss_position pos)
 		av.verticalDM /= lastAdded + 1;
 	}
 
-	average = &av;
+	average = av;
 	return av;
 }
 
@@ -167,8 +167,8 @@ bool PosAverager::toJson(CString path)
 		}
 	}
 
-	lat.Format(_T("%.10f"), average->horizontalDM);
-	lon.Format(_T("%.10f"), average->verticalDM);
+	lat.Format(_T("%.10f"), average.horizontalDM);
+	lon.Format(_T("%.10f"), average.verticalDM);
 
 	lines_string = "<wpt lat=\"";
 	lines_string += lat;
